@@ -2,16 +2,19 @@ from common.utils import split_video, add_path
 from joints_detectors.Alphapose.gene_npz import generate_kpts
 from pose_trackers.PoseFlow.tracker_general import track
 
+
 add_path()
 
 if __name__ == '__main__':
-    video = 'outputs/nba2k.mp4'
+    video_path = 'outputs/output1.avi'
 
-    print(f'Splitting video: {video} into images...')
-    split_video(video)
+    print(f'Splitting video: {video_path} into images...')
+    split_video(video_path)
 
-    generate_kpts(video)
-    track(video)
+    generate_kpts(video_path)
+    track(video_path)
+
+    video_process(video_path)
 
     # TODO: Need more action:
     #  1. "Improve the accuracy of tracking algorithm" or "Doing specific post processing after getting the track result".

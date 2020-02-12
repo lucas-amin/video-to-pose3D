@@ -1,6 +1,7 @@
 import os
 import time
 
+import cv2
 from common.arguments import parse_args
 from common.camera import *
 from common.generators import UnchunkedGenerator
@@ -161,4 +162,5 @@ def inference_video(video_path, detector_2d):
 
 
 if __name__ == '__main__':
-    inference_video('outputs/kunkun_cut.mp4', 'alpha_pose')
+    video_path = 'outputs/output1.avi'
+    inference_video(video_path, 'alpha_pose')

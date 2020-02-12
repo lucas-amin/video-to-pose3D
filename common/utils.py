@@ -135,6 +135,19 @@ def read_video(filename, fps=None, skip=0, limit=-1):
             break
 
 
+def video_process(image_folder, video_name):
+    images = [img.replace('.jpg', '') for img in os.listdir(image_folder) if img.endswith(".jpg")].sort(key = int)
+    frame = cv2.imread(os.path.join(image_folder, images[0]))
+    height, width, layers = frame.shape
+
+    video = cv2.VideoWriter(video_name, 0, 20, (width, height))
+
+    for image in images:
+        video.write(cv2.imread(os.path.join(image_folder, image)))
+
+    cv2.destroyAllWindows()
+    video.release()
+
 def split_video(video_path):
     stream = cv2.VideoCapture(video_path)
 
@@ -149,7 +162,7 @@ def split_video(video_path):
     total_frames = int(stream.get(cv2.CAP_PROP_FRAME_COUNT))
     length = len(str(total_frames)) + 1
 
-    i = 1
+    i = 0
     while True:
         grabbed, frame = stream.read()
 
@@ -157,7 +170,7 @@ def split_video(video_path):
             print(f'Split totally {i + 1} images from video.')
             break
 
-        save_path = f'{save_folder}/output{str(i).zfill(length)}.png'
+        save_path = f'{save_folder}/{str(i)}.jpg'
         cv2.imwrite(save_path, frame)
 
         i += 1
@@ -199,4 +212,5 @@ def evaluate(test_generator, model_pos, action=None, return_predictions=False):
 if __name__ == '__main__':
     os.chdir('..')
 
-    split_video('outputs/kobe.mp4')
+    # split_video('outputs/kunkun_cut.mp4')
+    video_process('outputs/alpha_pose_output1/vis', "output1_output.avi")

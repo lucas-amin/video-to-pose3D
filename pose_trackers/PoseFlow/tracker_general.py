@@ -25,6 +25,10 @@ from PoseFlow.utils import *
 from PoseFlow.visualization import display_pose
 from common.utils import Timer, calculate_area
 
+import cv2
+import os
+
+
 
 def remove_irrelevant(no_track_result, save_percent=0.5):
     """
@@ -42,7 +46,7 @@ def remove_irrelevant(no_track_result, save_percent=0.5):
     relevant_result = []
     for values in id_map.values():
         num = len(values)
-        if num > 20:
+        if num > 0:
             values.sort(key=lambda m: m['score'] * calculate_area(m['keypoints']), reverse=True)
             relevant_result.extend(values[: int(num * save_percent)])
 
@@ -72,9 +76,10 @@ def main(args):
         results_forvis = {}
         last_image_name = ' '
 
-        with open(notrack_json) as f:
-            results = json.load(f)
-            results = remove_irrelevant(results, 1)
+        with open(notrack_json) as json_file:
+            results = json.load(json_file)
+            results = remove_irrelevant(results)
+
             for i in range(len(results)):
                 imgpath = results[i]['image_id']
                 if last_image_name != imgpath:
@@ -84,6 +89,7 @@ def main(args):
                     results_forvis[imgpath].append({'keypoints': results[i]['keypoints'], 'scores': results[i]['score']})
                 last_image_name = imgpath
         notrack_json = os.path.join(os.path.dirname(notrack_json), "alphaposse-results-forvis.json")
+
         with open(notrack_json, 'w') as json_file:
             json_file.write(json.dumps(results_forvis))
 
@@ -93,8 +99,8 @@ def main(args):
 
     # load json file without tracking information
     print("Start loading json file...\n")
-    with open(notrack_json, 'r') as f:
-        notrack = json.load(f)
+    with open(notrack_json, 'r') as json_file:
+        notrack = json.load(json_file)
         for img_name in tqdm(sorted(notrack.keys())):
             track[img_name] = {'num_boxes': len(notrack[img_name])}
             for bid in range(len(notrack[img_name])):
@@ -223,6 +229,7 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
     os.chdir('../..')
+    video = 'outputs/output1.avi'
 
     with Timer('Track'):
-        track('kobe.mp4')
+        track(video)
